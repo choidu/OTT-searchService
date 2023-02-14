@@ -20,12 +20,16 @@ Login.php---------------------------------------------------------
 
     if(($id == "") || ($password == "")){
         $response["success"] = false;
-    } else 
-    {
+    } 
+    elseif(($id == "SELECT id FROM USER WHERE id = '$id'") AND ($password == "SELECT password FROM USER WHERE password = '$password'")){
         $response["success"] = true;
         $response["id"] = $id;
         $response["password"] = $password;
+    } 
+    else{
+        $response["success"] = false;
     }
+        
      
 
     echo json_encode($response);
