@@ -1,7 +1,7 @@
 Login.php---------------------------------------------------------
 //
 <?php
-    $con = mysqli_connect("localhost", "juhee3297", "dkdlql!741", "juhee3297");
+    $con = mysqli_connect("localhost", "아이디", "비번", "아이디");
     mysqli_query($con,'SET NAMES uft8');
 
     //입력한 id와 password 받아오기
@@ -38,7 +38,7 @@ Login.php---------------------------------------------------------
 Register.php------------------------------------
 //회원가입
 <?php
-    $con = mysqli_connect("localhost", "juhee3297", "dkdlql!741", "juhee3297");
+    $con = mysqli_connect("localhost", "아이디", "비번", "아이디");
     mysqli_query($con,'SET NAMES uft8');
 
     $id = isset($_POST["id"]) ? $_POST["id"] : ""; //입력받음
@@ -70,7 +70,7 @@ Member.php----------------------------------------------
 
 <?php
 
-    $con = mysqli_connect("localhost", "juhee3297", "dkdlql!741", "juhee3297");
+    $con = mysqli_connect("localhost", "아이디", "비번", "아이디");
     
     $result = mysqli_query($con,"SELECT*FROM USER;");
 
