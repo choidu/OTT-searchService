@@ -1,5 +1,5 @@
 Login.php---------------------------------------------------------
-
+//
 <?php
     $con = mysqli_connect("localhost", "juhee3297", "dkdlql!741", "juhee3297");
     mysqli_query($con,'SET NAMES uft8');
@@ -36,7 +36,7 @@ Login.php---------------------------------------------------------
 ?>
 
 Register.php------------------------------------
-
+//회원가입
 <?php
     $con = mysqli_connect("localhost", "juhee3297", "dkdlql!741", "juhee3297");
     mysqli_query($con,'SET NAMES uft8');
@@ -65,3 +65,24 @@ Register.php------------------------------------
 
 ?>
 
+Member.php----------------------------------------------
+// 멤버 목록 전부 출력하기
+
+<?php
+
+    $con = mysqli_connect("localhost", "juhee3297", "dkdlql!741", "juhee3297");
+    
+    $result = mysqli_query($con,"SELECT*FROM USER;");
+
+    $response = array();
+
+    while($row = mysqli_fetch_array($result)){
+        
+        array_push($response,array("id"=>$row[0],"password"=>$row[1],"name"=>$row[2]));
+    }
+    
+    echo json_encode(array("response"=>$response));
+
+    mysqli_close($con);
+        
+    ?>
