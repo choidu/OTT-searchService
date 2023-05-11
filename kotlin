@@ -322,3 +322,82 @@ class usercheck (id: String, listener: Response.Listener<String?>) :
         private const val URL = "http://주소/usercheck.php"
     }
 }
+
+
+Member---------------------------------------------------
+@file:Suppress("DEPRECATION")
+
+package com.example.choiduflix
+
+import android.annotation.SuppressLint
+import android.app.ProgressDialog
+import android.content.Context
+import android.net.ConnectivityManager
+import android.os.AsyncTask
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.fragment_searchresult.*
+import kotlinx.android.synthetic.main.searchresult.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+
+
+@Suppress("DEPRECATION")
+class maintest : AppCompatActivity() {
+
+    lateinit var context : Context
+
+    @SuppressLint("MissingInflatedId")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.fragment_searchresult)
+        context = this
+        getQuestions().execute()
+    }
+
+    @Suppress("DEPRECATION")
+    internal inner class getQuestions : AsyncTask<Void, Void, String>() {
+
+        lateinit var progressDialog : ProgressDialog
+        var hasInternet = false
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            progressDialog = ProgressDialog(context)
+            progressDialog.setMessage("Downloading Questions...")
+            progressDialog.setCancelable(false)
+            progressDialog.show()
+        }
+
+        override fun doInBackground(vararg params: Void?): String {
+            if(isNetworkAvailable()) {
+                hasInternet = true
+                val client = OkHttpClient()
+                val url = "http://juhee3297.cafe24.com/member.php"
+                val request = Request.Builder().url(url).build()
+                val response = client.newCall(request).execute()
+                return response.body?.string().toString()
+            }else
+            {
+                return ""
+            }
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            progressDialog.dismiss()
+
+            if(hasInternet) {
+                tv_result.text = result
+            }else
+                tv_result.text = "No Internet"
+        }
+
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+}
