@@ -506,3 +506,56 @@ class maintest : Fragment() {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 }
+
+list 출력----------------------
+ class maintest : Fragment() {
+
+            private lateinit var listView: ListView
+            private lateinit var adapter: ContentsListAdapter
+            private lateinit var contentsList: MutableList<Contents>
+
+            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+                val view = inflater.inflate(R.layout.fragment_search, container, false)
+                listView = view.findViewById(R.id.listView)
+                return view
+            }
+
+            override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+                super.onViewCreated(view, savedInstanceState)
+                contentsList = ArrayList()
+                contentsList.add(Contents("알라딘", "영화", "모험"))
+                contentsList.add(Contents("미녀와 야수", "영화", "애니"))
+                adapter = ContentsListAdapter(requireContext(), contentsList)
+                listView.adapter = adapter
+            }
+        }
+       
+ ContentsListAdapter---------------------------
+   class ContentsListAdapter(private val context: Context, private val contentsList: List<Contents>) : BaseAdapter() {
+
+    override fun getCount(): Int {
+        return contentsList.size
+    }
+
+    override fun getItem(i: Int): Any {
+        return contentsList[i]
+    }
+
+    override fun getItemId(i: Int): Long {
+        return i.toLong()
+    }
+
+    override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View {
+        val v = View.inflate(context, R.layout.contents, null)
+        val title = v.findViewById<TextView>(R.id.title)
+        val contype = v.findViewById<TextView>(R.id.contype)
+        val genre = v.findViewById<TextView>(R.id.genre)
+
+        title.text = contentsList[i].title
+        contype.text = contentsList[i].contype
+        genre.text = contentsList[i].genre
+
+        v.tag = contentsList[i].title
+        return v
+    }
+}
