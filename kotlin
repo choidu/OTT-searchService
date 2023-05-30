@@ -401,3 +401,108 @@ class maintest : AppCompatActivity() {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 }
+
+searchresultActivity------------------------------------------------------
+
+@file:Suppress("DEPRECATION")
+
+package com.example.choiduflix
+
+import android.app.ProgressDialog
+import android.content.Context
+import android.net.ConnectivityManager
+import android.os.AsyncTask
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_searchresult.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+
+
+@Suppress("DEPRECATION")
+class maintest : Fragment() {
+
+    private var recyclerview: RecyclerView? = null
+//    private var adapter: ContentsListAdapter? = null
+//    private var contentsList: MutableList<Contents>? = null
+    lateinit var contentsAdapter: ContentsListAdapter
+    val datas = mutableListOf<Contents>()
+
+//    lateinit var contentsrecyclerview: RecyclerView
+//    private lateinit var ContentsArrayList : ArrayList<Contents>
+//    private var contentsdata = ArrayList<Contents>()
+//    lateinit var title : Array<String>
+//    lateinit var contype : Array<String>
+//    private var search: String? = null
+
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_searchresult, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        recyclerview?.layoutManager = LinearLayoutManager(context)
+        recyclerview?.adapter = contentsAdapter
+
+        GetQuestionsTask().execute()
+    }
+
+    inner class GetQuestionsTask : AsyncTask<Void, Void, String>() {
+
+        private lateinit var progressDialog: ProgressDialog
+        private var hasInternet = false
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            progressDialog = ProgressDialog(context)
+            progressDialog.setMessage("Downloading Questions...")
+            progressDialog.setCancelable(false)
+            progressDialog.show()
+        }
+
+        override fun doInBackground(vararg params: Void?): String {
+            if (isNetworkAvailable()) {
+                hasInternet = true
+                val client = OkHttpClient()
+                val url = "http://서버/contents.php"
+                val request = Request.Builder().url(url).build()
+                val response = client.newCall(request).execute()
+                return response.body?.string().toString()
+            } else {
+                return ""
+            }
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            progressDialog.dismiss()
+
+
+            if(hasInternet) {
+                val contents = Contents(result?: "", result?: "",result?: "")
+                datas.add(contents)
+
+                // 어댑터에 데이터 변경을 알림
+                contentsAdapter.datas = datas
+                contentsAdapter.notifyDataSetChanged()
+
+            }
+            }
+        }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+}
