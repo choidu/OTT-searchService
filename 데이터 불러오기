@@ -1,0 +1,109 @@
+maintest.kt-------------------------------------------------------------------------------
+
+@file:Suppress("DEPRECATION")
+
+package com.example.choiduflix
+
+import android.annotation.SuppressLint
+import android.app.ProgressDialog
+import android.content.Context
+import android.net.ConnectivityManager
+import android.os.AsyncTask
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ListView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.contents.*
+import kotlinx.android.synthetic.main.fragment_searchresult.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
+
+
+@Suppress("DEPRECATION")
+
+class maintest : AppCompatActivity() {
+
+    lateinit var context: Context
+    private var tv_reault: TextView? = null
+
+    @SuppressLint("MissingInflatedId")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.main)
+        context = this
+        getQuestions().execute()
+    }
+
+    @Suppress("DEPRECATION")
+    internal inner class getQuestions : AsyncTask<Void, Void, String>() {
+
+        lateinit var progressDialog : ProgressDialog
+        var hasInternet = false
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            progressDialog = ProgressDialog(context)
+            progressDialog.setMessage("Downloading Questions...")
+            progressDialog.setCancelable(false)
+            progressDialog.show()
+        }
+
+        override fun doInBackground(vararg params: Void?): String {
+            if(isNetworkAvailable()) {
+                hasInternet = true
+                val client = OkHttpClient()
+                val url = "http://juhee3297.cafe24.com/contents.php"
+                val request = Request.Builder().url(url).build()
+                val response = client.newCall(request).execute()
+                return response.body?.string().toString()
+            }else
+            {
+                return ""
+            }
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            progressDialog.dismiss()
+
+            if(hasInternet) {
+                tv_result.text = result
+            }else
+                tv_result.text = "No Internet"
+        }
+
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+    
+main.xml-----------------------------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/contentsresult"
+    android:background="#FF018786">
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="MissingConstraints"
+        android:background="#ffffff"/>
+        
+</LinearLayout>
