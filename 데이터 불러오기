@@ -107,3 +107,115 @@ main.xml------------------------------------------------------------------------
         android:background="#ffffff"/>
         
 </LinearLayout>
+
+
+Main.kt-----------------------------------------------------------------------------------------------------------
+package com.example.choiduflix
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.AsyncTask
+import android.os.Bundle
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_searchresult.*
+import java.lang.reflect.Array.newInstance
+import java.net.URL
+
+
+class MainActivity : AppCompatActivity() {
+
+    private var mainresult: LinearLayout? = null
+    private var btn_search: Button? = null
+    private var search_input: EditText? = null
+
+    @SuppressLint("MissingInflatedId")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        mainresult = findViewById(R.id.mainresult)
+        btn_search = findViewById(R.id.btn_search)
+        search_input = findViewById(R.id.search_input)
+
+
+        //검색 버튼 클릭시
+        btn_search?.setOnClickListener {
+
+            val intent = Intent(this, maintest::class.java)
+
+            startActivity(intent)
+            }
+         }
+    }
+
+activity_main.xml-----------------------------------------------------------------------------------
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp">
+
+        <EditText
+            android:id="@+id/search_input"
+            android:inputType="text"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:hint="작품을 검색하세요"
+            android:textSize="25sp"/>
+
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="검색" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/result">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/mainresult">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="랭킹 출력"
+                android:textSize="20dp"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/fragment">
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+
+</LinearLayout>
