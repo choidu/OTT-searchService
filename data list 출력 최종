@@ -1,0 +1,119 @@
+@file:Suppress("DEPRECATION")
+
+package com.example.choiduflix
+
+import android.annotation.SuppressLint
+import android.app.ProgressDialog
+import android.content.Context
+import android.net.ConnectivityManager
+import android.os.AsyncTask
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ListView
+import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.fragment_searchresult.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
+
+class maintest : Fragment() {
+
+    private lateinit var contentsListView: ListView
+    private lateinit var adapter: ContentsListAdapter
+    private var contentsList = arrayListOf<Contents>()
+
+    @SuppressLint("MissingInflatedId")
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_search, container, false)
+
+        contentsListView = view.findViewById(R.id.contentsListView)
+        contentsList = ArrayList<Contents>()
+        adapter = ContentsListAdapter(requireContext(), contentsList)
+        contentsListView.adapter = adapter
+
+        return view
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        getQuestions().execute()
+    }
+
+    @Suppress("DEPRECATION")
+    internal inner class getQuestions : AsyncTask<Void, Void, String>() {
+
+        lateinit var progressDialog: ProgressDialog
+        var hasInternet = false
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            progressDialog = ProgressDialog(requireContext())
+            progressDialog.setMessage("Downloading Questions...")
+            progressDialog.setCancelable(false)
+            progressDialog.show()
+        }
+
+        override fun doInBackground(vararg params: Void?): String {
+            if (isNetworkAvailable()) {
+                hasInternet = true
+                val client = OkHttpClient()
+                val url = "http://서버/contents.php"
+                val request = Request.Builder().url(url).build()
+                val response = client.newCall(request).execute()
+                return response.body?.string().toString()
+            } else {
+                return ""
+            }
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            progressDialog.dismiss()
+            if (hasInternet) {
+            try {
+                val jsonObject = JSONObject(result)
+                val jsonArray = jsonObject.getJSONArray("response")
+
+
+                var count = 0
+
+
+                while(count < jsonArray.length())
+                {
+
+                    val list = jsonArray.getJSONObject(count)
+                    val title = list.getString("title")
+                    val contype = list.getString("contype")
+                    val genre = list.getString("genre")
+                    val contents = Contents(title, contype, genre)
+                    contentsList.add(contents)
+                    count++
+
+                }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+            adapter.notifyDataSetChanged()
+        }
+    }
+     private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
+
+}
