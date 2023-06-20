@@ -86,3 +86,31 @@ Member.php----------------------------------------------
     mysqli_close($con);
         
     ?>
+
+<?php  
+   
+    $con = mysqli_connect("localhost", "juhee3297", "dkdlql!741", "juhee3297");
+    $search = $_GET["searchText"];
+    $result = mysqli_query($con,"SELECT*FROM CONTENTS_watcha_animation WHERE title LIKE '%$search%';");
+
+    $response = array();
+
+    while($row = mysqli_fetch_array($result)){
+        
+        array_push($response,array("title"=>$row[0],"genre"=>$row[2],"image"=>$row[4]));
+        
+//        $response["title"] = $title;
+//        $response["contype"] = $contype;
+//        $response["genre"] = $genre;
+    }
+    
+    echo json_encode(array("response"=>$response));
+
+    mysqli_close($con);
+        
+    ?>
+    echo json_encode(array("response"=>$response));
+
+    mysqli_close($con);
+        
+    ?>
