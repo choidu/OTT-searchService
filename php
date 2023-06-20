@@ -114,3 +114,32 @@ Member.php----------------------------------------------
     mysqli_close($con);
         
     ?>
+
+
+완료----------------------------------
+<?php  
+    $con = mysqli_connect("localhost", "juhee3297", "dkdlql!741", "juhee3297");
+    $search = $_GET["search"]; // GET 방식으로 전달된 검색어를 가져옵니다.
+    $searchText = mysqli_real_escape_string($con, $search); // SQL Injection 방지를 위해 검색어를 이스케이프 처리합니다.
+    $result = mysqli_query($con, "SELECT * FROM CONTENTS_watcha_animation WHERE title LIKE '%$searchText%';");
+
+    $response = array();
+
+    while ($row = mysqli_fetch_array($result)){
+        $title = $row["title"];
+        $genre = $row["genre"];
+        $image = $row["image"];
+
+        $content = array(
+            "title" => $title,
+            "genre" => $genre,
+            "image" => $image
+        );
+
+        array_push($response, $content);
+    }
+    
+    echo json_encode(array("response" => $response));
+
+    mysqli_close($con);
+?>
